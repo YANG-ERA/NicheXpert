@@ -8,127 +8,77 @@ NicheXpert is a deep-learning algorithm to identify and characterize cell niches
 
 <!-- ![avatar](images/workflow.jpg) -->
 
-anndata>=0.10.9
-dgl>=2.2.1
-matplotlib>=3.7.3
-numpy>=1.23.4
-pandas>=2.1.0
-scanpy>=1.9.8
-scikit-learn>=1.4.1.post1
-scipy>=1.12.0
-seaborn>=0.13.2
-squidpy>=1.4.1
-torch>=2.1.0+cu118
-torch-geometric>=2.6.1
-tqdm>=4.67.1
-pydantic>=2.12.2
-
-
 
 ## Requirements and Installation
 [![anndata 0.10.9](https://img.shields.io/badge/anndata-0.10.9-success)](https://pypi.org/project/anndata/) [![matplotlib 3.7.3](https://img.shields.io/badge/matplotlib-3.7.3-ff69b4)](https://pypi.org/project/matplotlib/) [![numpy 1.23.4](https://img.shields.io/badge/numpy-1.23.4-ff69b4)](https://pypi.org/project/numpy/) [![pandas 2.1.0](https://img.shields.io/badge/pandas-2.1.0-important)](https://pypi.org/project/pandas/) [![scanpy 1.9.8](https://img.shields.io/badge/scanpy-1.9.8-informational)](https://github.com/scverse/scanpy) [![scikit-learn 1.4.1.post1](https://img.shields.io/badge/scikit--learn-1.4.1.post1-ff69b4)](https://pypi.org/project/scikit-learn/) [![seaborn 0.13.2](https://img.shields.io/badge/seaborn-0.13.2-ff69b4)](https://pypi.org/project/seaborn/) [![squidpy 1.4.1](https://img.shields.io/badge/squidpy-1.4.1-critical)](https://pypi.org/project/squidpy/) [![tqdm 4.67.1](https://img.shields.io/badge/tqdm-4.67.1-ff69b4)](https://pypi.org/project/tqdm/) [![pydantic 2.12.2](https://img.shields.io/badge/pydantic-2.12.2-9cf)](https://pypi.org/project/pydantic/) 
 
 Note: Owing to hardware-specific dependency requirements, deep learning frameworks including PyTorch and DGL are excluded from the explicit dependency list. Unspecified packages comprise: torch, dgl, torchdata, torch-geometric, pyg_lib, torch_cluster, torch_scatter, torch_sparse, and torch_spline_conv.
 
-## Major updates in v1.1.1
-scNiche now allows users to perform cell type enrichment analysis and visualization for low-resolution spatial transcriptomics data (make sure the cell type deconvolution results provided):
-   * Add `enrichment_spot()` function and `stacked_barplot_spot()` function.
-   * Tutorial: [Demonstration of enrichment analysis on human DLPFC 10X Visium data](tutorial/tutorial_DLPFC-analysis.ipynb) 
 
-
+## Installation Tutorial
 ### Create and activate conda environment with requirements installed.
-For scNiche, the Python version need is over 3.9. If you have already installed a lower version of Python, consider installing Anaconda, and then you can create a new environment.
+For NicheXpert, the Python version need is over 3.11. If you have already installed a lower version of Python, consider installing Anaconda, and then you can create a new environment.
 ```
-cd scNiche-main
-
-conda env create -f scniche_dev.yaml -n scniche
-conda activate scniche
+conda create -n nichexpert python=3.11
 ```
 
-### Install PyTorch and DGL
-We developed scNiche in a CUDA 11.3 environment. Here is an example of installing PyTorch and DGL with CUDA11.3:
-```
-# install PyTorch
-pip install torch==1.12.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113
+If a GPU is not available on your system, please install the CPU versions of PyTorch and DGL instead. You can still proceed by running the commands below to install essential dependencies.
 
-# install DGL
-pip install dgl==1.1.0+cu113 -f https://data.dgl.ai/wheels/cu113/repo.html
+This package is distributed via [uv](https://docs.astral.sh/uv/).
+
 ```
-The version of PyTorch and DGL should be suitable to the CUDA version of your machine. You can find the appropriate version on the [PyTorch](https://pytorch.org/get-started/locally/) and [DGL](https://www.dgl.ai/) website.
+conda activate nichexpert
+pip install uv
+uv pip install nichexpert
+```
+### Install PyTorch and DGL with CPU version
+The primary complexity lies in installing DGL and its associated PyTorch dependencies. Notably,since June 27, 2024, the DGL development team has ceased official support for Windows and macOS platforms. Here I recommend a feasible approach to install these packages.
+
+```
+uv pip install  dgl -f https://data.dgl.ai/wheels/torch-2.1/repo.html
+uv pip install torch==2.1.0
+uv pip install torchdata==0.7.1
+uv pip install torch==2.1.0
+uv pip install torch_geometric==2.6.1
+```
+
+Additional Libraries should be installed, including pyg_lib,torch_cluster, torch_scatter, torch_sparse, and torch_spline_conv.
+
+- **[`pyg-lib`](https://github.com/pyg-team/pyg-lib)**: Heterogeneous GNN operators and graph sampling routines
+- **[`torch-scatter`](https://github.com/rusty1s/pytorch_scatter)**: Accelerated and efficient sparse reductions
+- **[`torch-sparse`](https://github.com/rusty1s/pytorch_sparse)**: [`SparseTensor`](https://pytorch-geometric.readthedocs.io/en/latest/advanced/sparse_tensor.html) support
+- **[`torch-cluster`](https://github.com/rusty1s/pytorch_cluster)**: Graph clustering routines
+- **[`torch-spline-conv`](https://github.com/rusty1s/pytorch_spline_conv)**: [`SplineConv`](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.conv.SplineConv.html) support
+
+These packages come with their own CPU and GPU kernel implementations based on the [PyTorch C++/CUDA/hip(ROCm) extension interface](https://github.com/pytorch/extension-cpp). For a basic usage of PyG, these dependencies are **fully optional**. For ease of installation of these extensions, the team of PyG also provides `pip` wheels for all major OS/PyTorch/CUDA combinations, see [here](https://data.pyg.org/whl).
+
+For details, please refer to the PyTorch Geometric GitHub repository: https://github.com/pyg-team/pytorch_geometric/tree/master
+
+In this tutorial, we will use the macOS system and install the CPU version of these packages with the following commands:
+
+```
+uv pip install https://data.pyg.org/whl/torch-2.1.0%2Bcpu/pyg_lib-0.3.0+pt21-cp311-cp311-macosx_11_0_universal2.whl
+uv pip install https://data.pyg.org/whl/torch-2.1.0%2Bcpu/torch_cluster-1.6.2-cp311-cp311-macosx_10_9_universal2.whl
+uv pip install https://data.pyg.org/whl/torch-2.1.0%2Bcpu/torch_scatter-2.1.2-cp311-cp311-macosx_10_9_universal2.whl
+uv pip install https://data.pyg.org/whl/torch-2.1.0%2Bcpu/torch_sparse-0.6.18-cp311-cp311-macosx_10_9_universal2.whl
+uv pip install https://data.pyg.org/whl/torch-2.1.0%2Bcpu/torch_spline_conv-1.2.2-cp311-cp311-macosx_10_9_universal2.whl
+
+```
+### Install PyTorch and DGL with GPU version
+Building...
 
 
-### Install scNiche
-```
-python setup.py build
-python setup.py install
-```
+
 
 ## Tutorials (identify cell niches)
-#### - Spatial proteomics data or single-cell spatial transcriptomics data
-
-By default, scNiche requires the single-cell spatial omics data (stored as `.h5ad` format) as input, where cell population label of each cell needs to be provided. 
-
-Here are examples of scNiche on simulated and biological datasets:
-* [Demonstration of scNiche on the simulated data](tutorial/tutorial_simulated.ipynb)
-* [Demonstration of scNiche on the mouse V1 neocortex STARmap data](tutorial/tutorial_STARmap.ipynb)
-
-
-scNiche also provides a subgraph-based batch training strategy to scale to large datasets and multi-slices:
-
-1. Batch training strategy of scNiche for single-slice:
-* [Demonstration of scNiche on the mouse spleen CODEX data](tutorial/tutorial_spleen.ipynb) (over 80,000 cells per slice)
-
-2. Batch training strategy of scNiche for multi-slices:
-* [Demonstration of scNiche on the human upper tract urothelial carcinoma (UTUC) IMC data](tutorial/tutorial_utuc.ipynb) (containing 115,060 cells from 16 slices)
-* [Demonstration of scNiche on the mouse frontal cortex and striatum MERFISH data](tutorial/tutorial_MERFISH.ipynb) (containing 376,107 cells from 31 slices)
-
-
-#### - Low-resolution spatial transcriptomics data 
-We here take 4 slices from the same donor of the [human DLPFC 10X Visium data](http://spatial.libd.org/spatialLIBD/) as an example.
-
-In contrast to spatial proteomics data, which usually contain only a few dozen proteins, these spatial transcriptomics data can often measure tens of thousands of genes, 
-with potential batch effects commonly present across tissue slices from different samples. 
-Therefore, dimensionality reduction and batch effect removal need to be performed on the molecular profiles of the cells and their neighborhoods before run scNiche.
-We used [scVI](https://github.com/scverse/scvi-tools) by defalut, however, simple PCA dimensionality reduction or other deep learning-based integration methods like [scArches](https://github.com/theislab/scarches) are also applicable.
-
-Furthermore, cell type labels are usually unavailable for these spatial transcriptomics data. As alternatives, 
-we can: 
-1. Use the `deconvolution results of spots` as a substitute view to replace the `cellular compositions of neighborhoods`. 
-We used the human middle temporal gyrus (MTG) scRNA-seq data by [Hodge et al.](https://doi.org/10.1038/s41586-019-1506-7) as the single-cell reference, and deconvoluted the spots using [Cell2location](https://github.com/BayraktarLab/cell2location):
-
-* [Demonstration of scNiche on Slice 151673 (with deconvolution results)](tutorial/tutorial_dlpfc151673.ipynb)
-
-2. Only use the molecular profiles of cells and neighborhoods as input:
-
-* [Demonstration of scNiche on Slice 151673 (without deconvolution results)](tutorial/tutorial_dlpfc151673-2view.ipynb)
-
-
-Multi-slice analysis of 4 slices based on the batch training strategy of scNiche:
-
-* [Demonstration of scNiche on 4 slices from the same donor (with deconvolution results)](tutorial/tutorial_DLPFC.ipynb)
-
-#### - Spatial multi-omics data 
-The strategy of scNiche for modeling features from different views of the cell offers more possible avenues for expansion, 
-such as application to spatial multi-omics data. We here ran scNiche on a postnatal day (P)22 mouse brain coronal section 
-dataset generated by [Zhang et al.](https://doi.org/10.1038/s41586-023-05795-1), which includes RNA-seq and CUT&Tag (acetylated histone H3 Lys27 (H3K27ac) histone modification) modalities.
-The dataset can be downloaded [here](https://zenodo.org/records/10362607).
-
-* [Demonstration of scNiche on the mouse brain spatial CUT&Tag–RNA-seq data](tutorial/tutorial_multi-omics.ipynb)
-
-
-## Tutorials (characterize cell niches)
-scNiche also offers a downstream analytical framework for characterizing cell niches more comprehensively.
-
-Here are examples of scNiche on two biological datasets:
-* [Demonstration of scNiche on the human triple-negative breast cancer (TNBC) MIBI-TOF data](tutorial/tutorial_tnbc.ipynb)
-* [Demonstration of scNiche on the mouse liver Seq-Scope data](tutorial/tutorial_liver.ipynb)
+Building...
 
 
 ## Acknowledgements
-The scNiche model is developed based on the [multi-view clustering framework (CMGEC)](https://github.com/wangemm/CMGEC-TMM-2021). We thank the authors for releasing the codes.
+Building...
 
 ## About
-scNiche is developed by Jingyang Qian. Should you have any questions, please contact Jingyang Qian at qianjingyang@zju.edu.cn.
+NicheXpert is developed by [Jiyuan Yang](https://orcid.org/0000-0001-7709-6088). For any inquiries, please feel free to reach out to me via email at jiyuanyang0828@163.com.
 
 ## References
-Qian, J., Shao, X., Bao, H. et al. Identification and characterization of cell niches in tissue from spatial omics data at single-cell resolution. Nat Commun 16, 1693 (2025). [https://doi.org/10.1038/s41467-025-57029-9](https://doi.org/10.1038/s41467-025-57029-9)
+Building...
