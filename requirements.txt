@@ -11,3 +11,4 @@ squidpy>=1.4.1
 torch>=2.1.0+cu118
 torch-geometric>=2.6.1
 tqdm>=4.67.1
+pydantic>=2.12.2
