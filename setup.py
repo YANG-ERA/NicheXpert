@@ -17,7 +17,7 @@ DESCRIPTION = 'A tool to identify niche for spatial transcriptomics data.'
 EMAIL = '599568651@qq.com'
 URL="https://github.com/YANG-ERA/NicheXpert"
 AUTHOR ='Jiyuan Yang'
-VERSION = '0.1.1'
+VERSION = '0.1.2'
 
 setup(
     name=NAME,
@@ -33,14 +33,16 @@ setup(
     install_requires=[
         'anndata>=0.10.9',
         'matplotlib>=3.7.3',
-        'numpy>=1.23.4','pandas>=2.1.0',
+        'numpy>=1.23.4',
+        'pandas>=2.1.0',
         'scanpy>=1.9.8',
         'scikit-learn>=1.4.1.post1',
         'scipy>=1.12.0',
         'seaborn>=0.13.2',
         'squidpy>=1.4.1',
-        'tqdm>=4.67.1'
+        'tqdm>=4.67.1',
+        'pydantic>=2.12.2'
     ],
-    python_requires=">=3.9"
+    python_requires=">=3.11"
     
 )
